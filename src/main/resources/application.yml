@@ -1,0 +1,41 @@
+server:
+  port: 5000
+
+jwt:
+  secret: Key#SuperSecret$Intech#Microservices#956557298
+
+spring:
+  application:
+    name: appgateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: ms-seguridad
+          uri: http://localhost:500
+          predicates:
+            - Path=/seguridad/**
+          filters:
+            - StripPrefix=1
+        - id: ms-producto
+          uri: http://localhost:400
+          predicates:
+            - Path=/producto/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+        - id: ms-usuario
+          uri: http://localhost:700
+          predicates:
+            - Path=/usuario/**
+          filters:
+            - StripPrefix=1
+            - JwtAuthenticationFilter
+
